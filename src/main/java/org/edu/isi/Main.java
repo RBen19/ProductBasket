@@ -1,9 +1,18 @@
 package org.edu.isi;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import org.edu.isi.services.JpaUtils;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
+
     public static void main(String[] args) {
+        EntityManager em = JpaUtils.getEmf();
+        EntityTransaction et = em.getTransaction();
+        et.begin();
+        et.commit();
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         System.out.printf("Hello and welcome!");
