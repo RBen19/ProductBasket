@@ -15,7 +15,10 @@ public class ProductBasket {
     private Product product;
 
     @Id
-    @ManyToOne
+    @ManyToOne(targetEntity = Basket.class)
     private Basket basket;
+
+    @Column(name = "quantity",nullable = false)
+    private double quantity;
 
 }

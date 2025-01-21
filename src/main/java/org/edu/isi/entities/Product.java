@@ -17,8 +17,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int  product_id;
 
-    public Product() {
-    }
+
 
     public Product(String code_product, double unitprice_product, String product_name) {
         this.code_product = code_product;

@@ -22,4 +22,8 @@ public class Basket {
 
     @OneToMany(mappedBy = "basket")
     List<ProductBasket> basketList;
+
+    public Basket(String code_basket) {
+        this.code_basket = code_basket;
+    }
 }

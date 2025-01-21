@@ -2,6 +2,7 @@ package org.edu.isi;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import org.edu.isi.entities.Basket;
 import org.edu.isi.entities.Product;
 import org.edu.isi.services.JpaUtils;
 
@@ -43,9 +44,9 @@ public class Main {
         System.out.println("Please enter the product price: ");
         product_price = sc.nextDouble();
 
-        Product product = new Product(product_code,product_price,product_name);
         try {
             em.getTransaction().begin();
+            Product product = new Product(product_code,product_price,product_name);
             em.persist(product);
             em.getTransaction().commit();
             result = true;
@@ -57,6 +58,32 @@ public class Main {
 
         return result;
     }
+
+    static boolean createBasket(){
+        EntityManager em = JpaUtils.getEmf();
+        boolean result = false;
+        Scanner sc = new Scanner(System.in);
+
+        String basket_code;
+
+        System.out.println("Please enter the basket code: ");
+        basket_code = sc.nextLine();
+
+        try {
+            em.getTransaction().begin();
+            Basket basket = new Basket(basket_code);
+            em.persist(basket);
+            em.getTransaction().commit();
+            result = true;
+        }catch (Exception e){
+            em.getTransaction().rollback();
+        }finally {
+            em.close();
+        }
+
+        return result;
+    }
+
     static void message(boolean bool, String typeOfObject){
        if(bool){
            System.out.println("new "+typeOfObject+" added successfully");
@@ -77,9 +104,12 @@ public class Main {
                     result = createProduct();
                     message(result, "Product");
                     break;
+                    case 2:
+                        result = createBasket();
+                        message(result, "Basket");
+                        break;
                 default :System.out.println("Please enter a number between 1 and 4");
             }
-            et.commit();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
