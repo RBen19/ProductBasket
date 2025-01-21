@@ -17,6 +17,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int  product_id;
 
+    public Product() {
+    }
+
+    public Product(String code_product, double unitprice_product, String product_name) {
+        this.code_product = code_product;
+        this.unitprice_product = unitprice_product;
+        this.product_name = product_name;
+    }
+
     @Column(name = "code_product",length = 80,nullable = false,unique = true)
     private String code_product;
 
@@ -28,4 +37,5 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     List<ProductBasket> productBasketList;
+
 }

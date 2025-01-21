@@ -10,4 +10,12 @@ public class ProductBasket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_productbasket;
 
+    @Id
+    @ManyToOne(targetEntity = Product.class)
+    private Product product;
+
+    @Id
+    @ManyToOne
+    private Basket basket;
+
 }

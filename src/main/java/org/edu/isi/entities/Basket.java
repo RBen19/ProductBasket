@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name="tb_Basket")
 @AllArgsConstructor
@@ -17,4 +19,7 @@ public class Basket {
 
     @Column(name = "code_basket",nullable = false,unique = true,length = 80)
     private String code_basket;
+
+    @OneToMany(mappedBy = "basket")
+    List<ProductBasket> basketList;
 }
