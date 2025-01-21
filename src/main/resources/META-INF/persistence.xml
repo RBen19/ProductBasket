@@ -6,6 +6,7 @@
     <persistence-unit name="ProduitPanierPU" transaction-type="RESOURCE_LOCAL">
         <class>org.edu.isi.entities.Product</class>
         <class>org.edu.isi.entities.Basket</class>
+        <class>org.edu.isi.entities.ProductBasket</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/ProduiPanier" /> <!-- BD Mane -->

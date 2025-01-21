@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.edu.isi.entities.Basket;
 import org.edu.isi.entities.Product;
+import org.edu.isi.entities.ProductBasket;
 import org.edu.isi.services.JpaUtils;
 
 import java.util.Scanner;
@@ -52,6 +53,7 @@ public class Main {
             result = true;
         }catch (Exception e){
             em.getTransaction().rollback();
+            throw e;
         }finally {
             em.close();
         }
@@ -77,6 +79,7 @@ public class Main {
             result = true;
         }catch (Exception e){
             em.getTransaction().rollback();
+            em.getTransaction().rollback();
         }finally {
             em.close();
         }
@@ -84,12 +87,73 @@ public class Main {
         return result;
     }
 
-    static void message(boolean bool, String typeOfObject){
-       if(bool){
-           System.out.println("new "+typeOfObject+" added successfully");
+    static boolean createProductBasket(){
+
+       EntityManager em = JpaUtils.getEmf();
+       boolean result = false;
+       Scanner sc = new Scanner(System.in);
+       int id_basket;
+       int id_product;
+       int quantity=0;
+       Basket basket = null;
+       Product product = null;
+
+        System.out.println("Please enter the basket id: ");
+        id_basket = sc.nextInt();
+        basket = em.find(Basket.class, id_basket);
+        if(basket == null){
+            result = false;
+            message(false,"",true,"Basket doesn't exist");
+        }else{
+            System.out.println("Please enter the product id: ");
+            id_product = sc.nextInt();
+            product = em.find(Product.class, id_product);
+            if(product == null){
+                result = false;
+                message(false,"",true,"Product doesn't exist");
+            }else{
+
+                System.out.println("Please enter the quantity: ");
+                quantity = sc.nextInt();
+
+                while (quantity<0){
+                    System.out.println("Please enter the quantity: ");
+                    quantity = sc.nextInt();
+                }
+                double part2 = Math.random()*100+(Math.random()*10)+(2*quantity);
+                String code_product_basket= part2+"codePP";
+                try {
+                    em.getTransaction().begin();
+                    ProductBasket productBasket = new ProductBasket(code_product_basket,product,basket,quantity);
+                    em.persist(productBasket);
+                    em.getTransaction().commit();
+                    result = true;
+                    message(true,"ProductBasket",false,"");
+                } catch (Exception e) {
+                    em.getTransaction().rollback();
+                    throw new RuntimeException(e);
+                }finally {
+                    em.close();
+                }
+
+            }
+
+        }
+            return result;
+    }
+
+    static void message(boolean bool, String typeOfObject, boolean ispersonnalMessage,String PersonnalMessage){
+
+       if(ispersonnalMessage && PersonnalMessage!=""){
+           System.out.println(PersonnalMessage);
        }else{
-           System.out.println(typeOfObject+" not added ");
+           if(bool){
+               System.out.println("new "+typeOfObject+" added successfully");
+           }else{
+               System.out.println(typeOfObject+" not added ");
+           }
        }
+
     }
 
     public static void main(String[] args) {
@@ -102,12 +166,15 @@ public class Main {
             switch (option){
                 case 1:
                     result = createProduct();
-                    message(result, "Product");
+                    message(result, "Product",false,"");
                     break;
                     case 2:
                         result = createBasket();
-                        message(result, "Basket");
+                        message(result, "Basket",false,"");
                         break;
+                        case 3:
+                            result = createProductBasket();
+                            break;
                 default :System.out.println("Please enter a number between 1 and 4");
             }
 
