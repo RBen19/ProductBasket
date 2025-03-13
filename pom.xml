@@ -25,11 +25,28 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.24.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.sentry/sentry-log4j2 -->
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+            <version>8.2.0</version>
+        </dependency>
+
+
 
     </dependencies>
     <properties>

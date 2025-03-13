@@ -37,4 +37,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     List<ProductBasket> productBasketList;
 
+    @ManyToOne
+    @JoinColumn(name = "categorie_id",nullable =true,foreignKey = @ForeignKey(name = "FK_product_categorie"))
+    private Categorie categorie;
+
 }

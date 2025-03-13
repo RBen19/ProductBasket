@@ -1,7 +1,10 @@
 package org.edu.isi;
 
+import io.sentry.Sentry;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.edu.isi.entities.Basket;
 import org.edu.isi.entities.Product;
 import org.edu.isi.entities.ProductBasket;
@@ -12,7 +15,12 @@ import java.util.Scanner;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-   static int menu(){
+   static final Logger logger = LogManager.getLogger(Main.class);
+
+    static int menu(){
+       // logger.info("Menu Menu");
+        //logger.warn("une erreur tres grave ");
+        Sentry.captureMessage("Menu Menu");
         int option = 0;
         Scanner sc = new Scanner(System.in);
         while(option< 1 || option>4){
@@ -23,7 +31,7 @@ public class Main {
             System.out.println("4.Exit \n");
             option = sc.nextInt();
             System.out.println("**********************************");
-            if(option <1 || option>4){
+            if(option <1 || option>5){
                 System.out.println("Please enter a number between 1 and 4");
             }
         }
@@ -36,14 +44,21 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String product_name ;
         String product_code;
-        double product_price;
+        double product_price = 0;
 
         System.out.println("Please enter the product name: ");
         product_name = sc.nextLine();
         System.out.println("Please enter the product code: ");
         product_code = sc.nextLine();
-        System.out.println("Please enter the product price: ");
-        product_price = sc.nextDouble();
+        try{
+            System.out.println("Please enter the product price: ");
+            product_price = sc.nextDouble();
+        } catch (Exception e) {
+            logger.error("une valeur non numerique a été saisie comme prix lors de la creation d'un produit {}",e.getMessage());
+            Sentry.captureException(e);
+            return false;
+        }
+
 
         try {
             em.getTransaction().begin();
@@ -51,9 +66,11 @@ public class Main {
             em.persist(product);
             em.getTransaction().commit();
             result = true;
+            logger.info("le produit {} a bien ete creer ",product_name);
         }catch (Exception e){
             em.getTransaction().rollback();
-            throw e;
+            logger.error("erreur lors de la creation du produit {}",e.getMessage());
+            Sentry.captureException(e);
         }finally {
             em.close();
         }
@@ -76,10 +93,12 @@ public class Main {
             Basket basket = new Basket(basket_code);
             em.persist(basket);
             em.getTransaction().commit();
+            logger.info("le panier {} a bien ete creer et a pour code  ",basket_code);
             result = true;
         }catch (Exception e){
             em.getTransaction().rollback();
-            em.getTransaction().rollback();
+            logger.error("erreur lors de la creation du basket {}",e.getMessage());
+            Sentry.captureException(e);
         }finally {
             em.close();
         }
@@ -102,15 +121,15 @@ public class Main {
         id_basket = sc.nextInt();
         basket = em.find(Basket.class, id_basket);
         if(basket == null){
-            result = false;
-            message(false,"",true,"Basket doesn't exist");
+            logger.info("le panier avec l'id {} n' exite pas ",id_basket);
+            return false;
         }else{
             System.out.println("Please enter the product id: ");
             id_product = sc.nextInt();
             product = em.find(Product.class, id_product);
             if(product == null){
-                result = false;
-                message(false,"",true,"Product doesn't exist");
+                logger.info("le produit avec l'id  {} n'a pas ete trouver ",id_product);
+                return false;
             }else{
 
                 System.out.println("Please enter the quantity: ");
@@ -129,9 +148,11 @@ public class Main {
                     em.getTransaction().commit();
                     result = true;
                     message(true,"ProductBasket",false,"");
+                    logger.info("class d'association entre produit et panier creer");
                 } catch (Exception e) {
                     em.getTransaction().rollback();
-                    throw new RuntimeException(e);
+                    logger.error("Exception d'association entre produit et panier creer {}", e.getMessage());
+                    Sentry.captureException(e);
                 }finally {
                     em.close();
                 }
@@ -157,6 +178,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        logger.info("lancement de l'application");
         int option = menu();
         System.out.println(option);
         EntityManager em = JpaUtils.getEmf();
@@ -165,33 +187,26 @@ public class Main {
         try {
             switch (option){
                 case 1:
+                    logger.info("choix de l'option {}",1);
                     result = createProduct();
-                    message(result, "Product",false,"");
+                   // message(result, "Product",false,"");
                     break;
                     case 2:
+                        logger.info("choix de l'option {}",2);
                         result = createBasket();
-                        message(result, "Basket",false,"");
+                        //message(result, "Basket",false,"");
                         break;
                         case 3:
+                            logger.info("choix de l'option {}",2);
                             result = createProductBasket();
                             break;
                 default :System.out.println("Please enter a number between 1 and 4");
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error("erreur lors de l'exuction des use case  {}",e.getMessage());
         }finally {
             em.close();
-        }
-
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
-
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
         }
     }
 }

@@ -4,9 +4,12 @@
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
     <persistence-unit name="ProduitPanierPU" transaction-type="RESOURCE_LOCAL">
+        <class>org.edu.isi.entities.Categorie</class>
         <class>org.edu.isi.entities.Product</class>
         <class>org.edu.isi.entities.Basket</class>
         <class>org.edu.isi.entities.ProductBasket</class>
+        <class>org.edu.isi.entities.Client</class>
+        <class>org.edu.isi.entities.Commandes</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/ProduiPanier" /> <!-- BD Mane -->
